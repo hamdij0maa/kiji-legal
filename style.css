@@ -1,0 +1,28 @@
+:root{--bg:#fbfbfd;--fg:#1d1d1f;--muted:#6e6e73;--line:#d9d9de;--accent:#0a62ff;--card:#fff;--code:#f0f0f3}
+@media (prefers-color-scheme:dark){:root{--bg:#0b0b0f;--fg:#ececf1;--muted:#9a9aa3;--line:#2c2c33;--accent:#4d94ff;--card:#15151b;--code:#1e1e25}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Noto Sans Arabic","Noto Sans JP","Noto Sans KR","Noto Sans SC",sans-serif}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+header{border-bottom:1px solid var(--line);background:var(--card)}
+.bar{max-width:760px;margin:0 auto;padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.brand{font-weight:600;color:var(--fg)}
+nav.docs{max-width:760px;margin:0 auto;padding:0 16px 10px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:15px}
+nav.docs a[aria-current]{color:var(--fg);font-weight:600}
+select{font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 8px}
+main{max-width:760px;margin:0 auto;padding:24px 16px 48px;overflow-wrap:anywhere}
+h1{font-size:30px;line-height:1.2;margin:8px 0 4px}
+h2{font-size:21px;margin:34px 0 8px}
+h3{font-size:18px;margin:24px 0 6px}
+p,li{margin:0 0 12px}
+ul,ol{padding-inline-start:22px}
+code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em}
+hr{border:0;border-top:1px solid var(--line);margin:28px 0}
+.table{overflow-x:auto;margin:12px 0 18px;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:15px;line-height:1.45}
+th,td{text-align:start;vertical-align:top;padding:9px 11px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{background:var(--code);font-weight:600}
+footer{max-width:760px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:14px}
+ul.langs{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+ul.langs a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card)}

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark"><title>Kiji · Legal</title><link rel="stylesheet" href="style.css">
+<script>
+(function(){
+  var have=['en', 'ar', 'de', 'es', 'fr', 'it', 'ja', 'ko', 'pt-BR', 'zh-Hans'];
+  var asked=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||"en"]);
+  function pick(tag){
+    tag=String(tag||"");var low=tag.toLowerCase();
+    if(low.indexOf("zh")===0)return "zh-Hans";
+    if(low.indexOf("pt")===0)return "pt-BR";
+    var base=low.split("-")[0];
+    for(var i=0;i<have.length;i++)if(have[i].toLowerCase()===base)return have[i];
+    return null;
+  }
+  var lang="en";
+  for(var j=0;j<asked.length;j++){var p=pick(asked[j]);if(p){lang=p;break;}}
+  var doc=(location.hash||"").replace("#","");
+  var docs=['privacy', 'terms', 'eula', 'legal-notice', 'support'];
+  location.replace(lang+"/"+(docs.indexOf(doc)>=0?doc:"index")+".html");
+})();
+</script></head>
+<body><main><h1>Kiji</h1><ul class="langs"><li><a href="en/index.html" lang="en">English</a></li><li><a href="ar/index.html" lang="ar">العربية</a></li><li><a href="de/index.html" lang="de">Deutsch</a></li><li><a href="es/index.html" lang="es">Español</a></li><li><a href="fr/index.html" lang="fr">Français</a></li><li><a href="it/index.html" lang="it">Italiano</a></li><li><a href="ja/index.html" lang="ja">日本語</a></li><li><a href="ko/index.html" lang="ko">한국어</a></li><li><a href="pt-BR/index.html" lang="pt-BR">Português (Brasil)</a></li><li><a href="zh-Hans/index.html" lang="zh-Hans">简体中文</a></li></ul></main></body></html>
