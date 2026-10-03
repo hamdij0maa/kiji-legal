@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
+<title>Kiji</title>
+<!--
+  Where an email link from Kiji lands: Supabase confirms the address (or the new one, for a guest) at its
+  own /verify, then sends the browser here — the project's Site URL, and the redirect the app names since
+  1.0.4 — with the sign-in code (?code=, PKCE) or tokens (#access_token=) or an error (#error=).
+  On an iPhone, iPad or Mac this hands the same query and fragment to kiji://auth-callback, where the app
+  turns them into a session (AuthService.handleCallback); anywhere else it says the address is confirmed
+  and to sign in. Built into site/auth/index.html by build_site.py.
+-->
+<style>
+  :root { color-scheme: light dark; --page: #F2F2F2; --card: #FFFFFF; --line: #DBE1EB; --text: #364151; --soft: #4A5464; --accent: #00549E; --on-accent: #FFFFFF; }
+  @media (prefers-color-scheme: dark) {
+    :root { --page: #10151F; --card: #1C2432; --line: #283346; --text: #F2F5FC; --soft: #B0BDCF; --accent: #5AB3F7; --on-accent: #00101A; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--page); }
+  body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+         font: 17px/25px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--text); }
+  main { width: 100%; max-width: 480px; background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+         padding: 40px 32px 32px; text-align: center; }
+  img { display: block; width: 72px; height: 72px; margin: 0 auto; border-radius: 16px; box-shadow: 0 6px 18px rgba(11, 42, 85, 0.25); }
+  .word { margin: 12px 0 0; font: 600 18px/22px ui-serif, "New York", "Iowan Old Style", Georgia, serif; letter-spacing: 0.3px; }
+  h1 { margin: 24px 0 0; font: 600 26px/32px ui-serif, "New York", "Iowan Old Style", Georgia, serif; text-wrap: balance; }
+  p { margin: 12px 0 0; color: var(--soft); text-wrap: pretty; }
+  a.button { display: block; margin: 28px 0 0; padding: 15px 24px; border-radius: 999px; background: var(--accent);
+             color: var(--on-accent); font-weight: 600; text-decoration: none; }
+  a.button[hidden] { display: none; }
+  .tag { margin: 24px 0 0; font-size: 13px; line-height: 19px; color: var(--soft); }
+  :lang(ko) h1, :lang(ko) p { word-break: keep-all; }
+</style>
+</head>
+<body>
+<main>
+  <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/21/24/26/212426d6-db20-6660-34cd-c78c85fd1ab9/AppIcon-0-0-1x_U007epad-0-1-85-220.png/144x144bb.png" width="72" height="72" alt="Kiji">
+  <div class="word">Kiji</div>
+  <h1 id="title">Your email is confirmed</h1>
+  <p id="body">You’re all set. Kiji opens on this device; if it doesn’t, open Kiji and sign in with your email and password.</p>
+  <a class="button" id="open" href="kiji://auth-callback">Open Kiji</a>
+  <p class="tag" id="tag">Boards, thoughts and days, in one calm place.</p>
+</main>
+<script>
+(function () {
+  var words = {
+    en: ["Your email is confirmed", "You’re all set. Kiji opens on this device; if it doesn’t, open Kiji and sign in with your email and password.", "Open Kiji",
+         "This link has expired", "It may have been used already. Open Kiji and sign in. If your address isn’t confirmed yet, sign up again to get a new link.",
+         "Boards, thoughts and days, in one calm place.", "Open Kiji on your iPhone, iPad or Mac and sign in with your email and password."],
+    fr: ["Votre adresse e-mail est confirmée", "C’est fait. Kiji s’ouvre sur cet appareil ; sinon, ouvrez Kiji et connectez-vous avec votre e-mail et votre mot de passe.", "Ouvrir Kiji",
+         "Ce lien a expiré", "Il a peut-être déjà été utilisé. Ouvrez Kiji et connectez-vous. Si votre adresse n’est pas encore confirmée, inscrivez-vous à nouveau pour recevoir un nouveau lien.",
+         "Tableaux, idées et journées, en un lieu paisible.", "Ouvrez Kiji sur votre iPhone, iPad ou Mac et connectez-vous avec votre e-mail et votre mot de passe."],
+    es: ["Tu correo está confirmado", "Todo listo. Kiji se abre en este dispositivo; si no, abre Kiji e inicia sesión con tu correo y tu contraseña.", "Abrir Kiji",
+         "Este enlace ha caducado", "Puede que ya se haya usado. Abre Kiji e inicia sesión. Si tu dirección aún no está confirmada, regístrate de nuevo para recibir otro enlace.",
+         "Tableros, ideas y días, en un lugar tranquilo.", "Abre Kiji en tu iPhone, iPad o Mac e inicia sesión con tu correo y tu contraseña."],
+    de: ["Deine E-Mail-Adresse ist bestätigt", "Alles erledigt. Kiji öffnet sich auf diesem Gerät; falls nicht, öffne Kiji und melde dich mit deiner E-Mail-Adresse und deinem Passwort an.", "Kiji öffnen",
+         "Dieser Link ist abgelaufen", "Vielleicht wurde er schon verwendet. Öffne Kiji und melde dich an. Ist deine Adresse noch nicht bestätigt, registriere dich erneut, um einen neuen Link zu erhalten.",
+         "Boards, Gedanken und Tage – an einem ruhigen Ort.", "Öffne Kiji auf deinem iPhone, iPad oder Mac und melde dich mit deiner E-Mail-Adresse und deinem Passwort an."],
+    it: ["Il tuo indirizzo email è confermato", "Fatto. Kiji si apre su questo dispositivo; altrimenti apri Kiji e accedi con la tua email e la tua password.", "Apri Kiji",
+         "Questo link è scaduto", "Potrebbe essere già stato usato. Apri Kiji e accedi. Se il tuo indirizzo non è ancora confermato, registrati di nuovo per ricevere un nuovo link.",
+         "Bacheche, pensieri e giornate, in un posto tranquillo.", "Apri Kiji sul tuo iPhone, iPad o Mac e accedi con la tua email e la tua password."],
+    "pt-BR": ["Seu e-mail foi confirmado", "Tudo pronto. O Kiji abre neste aparelho; se não abrir, abra o Kiji e entre com seu e-mail e sua senha.", "Abrir o Kiji",
+         "Este link expirou", "Talvez ele já tenha sido usado. Abra o Kiji e entre. Se seu endereço ainda não foi confirmado, cadastre-se de novo para receber um novo link.",
+         "Quadros, ideias e dias, num lugar tranquilo.", "Abra o Kiji no seu iPhone, iPad ou Mac e entre com seu e-mail e sua senha."],
+    ar: ["تم تأكيد بريدك الإلكتروني", "كل شيء جاهز. سيُفتح Kiji على هذا الجهاز؛ وإن لم يُفتح، فافتح Kiji وسجّل الدخول ببريدك الإلكتروني وكلمة المرور.", "افتح Kiji",
+         "انتهت صلاحية هذا الرابط", "ربما استُخدم من قبل. افتح Kiji وسجّل الدخول. وإن لم يتم تأكيد عنوانك بعد، فأنشئ حسابك من جديد لتصلك رسالة برابط جديد.",
+         "لوحاتك وأفكارك وأيامك، في مكانٍ هادئ.", "افتح Kiji على جهاز iPhone أو iPad أو Mac وسجّل الدخول ببريدك الإلكتروني وكلمة المرور."],
+    "zh-Hans": ["你的电子邮件地址已确认", "一切就绪。Kiji 将在此设备上打开；如果没有打开，请打开 Kiji，用你的电子邮件和密码登录。", "打开 Kiji",
+         "此链接已失效", "它可能已被使用过。请打开 Kiji 并登录。如果你的地址尚未确认，请重新注册以获取新链接。",
+         "看板、想法与日子，都在一个安静的地方。", "请在你的 iPhone、iPad 或 Mac 上打开 Kiji，用你的电子邮件和密码登录。"],
+    ja: ["メールアドレスを確認しました", "準備ができました。この端末で Kiji が開きます。開かない場合は、Kiji を開いてメールアドレスとパスワードでサインインしてください。", "Kiji を開く",
+         "このリンクは期限切れです", "すでに使用された可能性があります。Kiji を開いてサインインしてください。アドレスがまだ確認されていない場合は、もう一度登録して新しいリンクを受け取ってください。",
+         "ボードも、考えも、日々も、ひとつの静かな場所に。", "iPhone、iPad、Mac で Kiji を開き、メールアドレスとパスワードでサインインしてください。"],
+    ko: ["이메일 주소가 확인되었습니다", "준비가 끝났습니다. 이 기기에서 Kiji가 열립니다. 열리지 않으면 Kiji를 열고 이메일과 비밀번호로 로그인하세요.", "Kiji 열기",
+         "이 링크는 만료되었습니다", "이미 사용된 링크일 수 있습니다. Kiji를 열고 로그인하세요. 주소가 아직 확인되지 않았다면 다시 가입해 새 링크를 받으세요.",
+         "보드와 생각과 하루를, 조용한 한곳에.", "iPhone, iPad 또는 Mac에서 Kiji를 열고 이메일과 비밀번호로 로그인하세요."]
+  };
+  function pick() {
+    var asked = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "en"]);
+    for (var i = 0; i < asked.length; i++) {
+      var tag = String(asked[i] || "");
+      var lower = tag.toLowerCase();
+      if (lower.indexOf("zh") === 0) return "zh-Hans";
+      if (lower.indexOf("pt") === 0) return "pt-BR";
+      var base = lower.split("-")[0];
+      if (words[base]) return base;
+    }
+    return "en";
+  }
+  var lang = pick();
+  var w = words[lang];
+  var query = location.search || "";
+  var hash = location.hash || "";
+  var params = new URLSearchParams(query.replace(/^\?/, "") + "&" + hash.replace(/^#/, ""));
+  var failed = params.has("error") || params.has("error_code");
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.getElementById("title").textContent = failed ? w[3] : w[0];
+  var apple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
+  document.getElementById("body").textContent = failed ? w[4] : (apple ? w[1] : w[6]);
+  document.getElementById("tag").textContent = w[5];
+  var open = document.getElementById("open");
+  open.textContent = w[2];
+  // The same query and fragment, for the app to finish signing in with.
+  var target = "kiji://auth-callback" + query + hash;
+  open.href = target;
+  if (!apple) open.hidden = true;
+  // Straight into the app where it can be, once, and only with something to sign in with.
+  if (apple && !failed && (params.has("code") || params.has("access_token"))) {
+    setTimeout(function () { location.href = target; }, 350);
+  }
+})();
+</script>
+</body>
+</html>
