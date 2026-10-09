@@ -12,7 +12,9 @@
   1.0.4 — with the sign-in code (?code=, PKCE) or tokens (#access_token=) or an error (#error=).
   On an iPhone, iPad or Mac this hands the same query and fragment to kiji://auth-callback, where the app
   turns them into a session (AuthService.handleCallback); anywhere else it says the address is confirmed
-  and to sign in. Built into site/auth/index.html by build_site.py.
+  and to sign in. A password recovery ("Forgot password?") lands here too, marked type=recovery, and is
+  handed on the same way; it says to choose a new password instead. Built into site/auth/index.html by
+  build_site.py.
 -->
 <style>
   :root { color-scheme: light dark; --page: #F2F2F2; --card: #FFFFFF; --line: #DBE1EB; --text: #364151; --soft: #4A5464; --accent: #00549E; --on-accent: #FFFFFF; }
@@ -50,34 +52,54 @@
   var words = {
     en: ["Your email is confirmed", "You’re all set. Kiji opens on this device; if it doesn’t, open Kiji and sign in with your email and password.", "Open Kiji",
          "This link has expired", "It may have been used already. Open Kiji and sign in. If your address isn’t confirmed yet, sign up again to get a new link.",
-         "Boards, thoughts and days, in one calm place.", "Open Kiji on your iPhone, iPad or Mac and sign in with your email and password."],
+         "Boards, thoughts and days, in one calm place.", "Open Kiji on your iPhone, iPad or Mac and sign in with your email and password.",
+         "Choose a new password", "Kiji opens on this device so you can choose a new password. If it doesn’t, open this link on the iPhone, iPad or Mac where you asked for it.",
+         "Open this link on the iPhone, iPad or Mac where you asked for it, and choose a new password in Kiji.", "It may have been used already. Open Kiji and ask for a new link from the sign-in screen."],
     fr: ["Votre adresse e-mail est confirmée", "C’est fait. Kiji s’ouvre sur cet appareil ; sinon, ouvrez Kiji et connectez-vous avec votre e-mail et votre mot de passe.", "Ouvrir Kiji",
          "Ce lien a expiré", "Il a peut-être déjà été utilisé. Ouvrez Kiji et connectez-vous. Si votre adresse n’est pas encore confirmée, inscrivez-vous à nouveau pour recevoir un nouveau lien.",
-         "Tableaux, idées et journées, en un lieu paisible.", "Ouvrez Kiji sur votre iPhone, iPad ou Mac et connectez-vous avec votre e-mail et votre mot de passe."],
+         "Tableaux, idées et journées, en un lieu paisible.", "Ouvrez Kiji sur votre iPhone, iPad ou Mac et connectez-vous avec votre e-mail et votre mot de passe.",
+         "Choisissez un nouveau mot de passe", "Kiji s’ouvre sur cet appareil pour que vous choisissiez un nouveau mot de passe. Sinon, ouvrez ce lien sur l’iPhone, l’iPad ou le Mac depuis lequel vous l’avez demandé.",
+         "Ouvrez ce lien sur l’iPhone, l’iPad ou le Mac depuis lequel vous l’avez demandé, puis choisissez un nouveau mot de passe dans Kiji.", "Il a peut-être déjà été utilisé. Ouvrez Kiji et demandez un nouveau lien depuis l’écran de connexion."],
     es: ["Tu correo está confirmado", "Todo listo. Kiji se abre en este dispositivo; si no, abre Kiji e inicia sesión con tu correo y tu contraseña.", "Abrir Kiji",
          "Este enlace ha caducado", "Puede que ya se haya usado. Abre Kiji e inicia sesión. Si tu dirección aún no está confirmada, regístrate de nuevo para recibir otro enlace.",
-         "Tableros, ideas y días, en un lugar tranquilo.", "Abre Kiji en tu iPhone, iPad o Mac e inicia sesión con tu correo y tu contraseña."],
+         "Tableros, ideas y días, en un lugar tranquilo.", "Abre Kiji en tu iPhone, iPad o Mac e inicia sesión con tu correo y tu contraseña.",
+         "Elige una contraseña nueva", "Kiji se abre en este dispositivo para que elijas una contraseña nueva. Si no, abre este enlace en el iPhone, iPad o Mac desde el que lo pediste.",
+         "Abre este enlace en el iPhone, iPad o Mac desde el que lo pediste y elige una contraseña nueva en Kiji.", "Puede que ya se haya usado. Abre Kiji y pide un enlace nuevo desde la pantalla de inicio de sesión."],
     de: ["Deine E-Mail-Adresse ist bestätigt", "Alles erledigt. Kiji öffnet sich auf diesem Gerät; falls nicht, öffne Kiji und melde dich mit deiner E-Mail-Adresse und deinem Passwort an.", "Kiji öffnen",
          "Dieser Link ist abgelaufen", "Vielleicht wurde er schon verwendet. Öffne Kiji und melde dich an. Ist deine Adresse noch nicht bestätigt, registriere dich erneut, um einen neuen Link zu erhalten.",
-         "Boards, Gedanken und Tage – an einem ruhigen Ort.", "Öffne Kiji auf deinem iPhone, iPad oder Mac und melde dich mit deiner E-Mail-Adresse und deinem Passwort an."],
+         "Boards, Gedanken und Tage – an einem ruhigen Ort.", "Öffne Kiji auf deinem iPhone, iPad oder Mac und melde dich mit deiner E-Mail-Adresse und deinem Passwort an.",
+         "Wähle ein neues Passwort", "Kiji öffnet sich auf diesem Gerät, damit du ein neues Passwort wählen kannst. Falls nicht, öffne diesen Link auf dem iPhone, iPad oder Mac, auf dem du ihn angefordert hast.",
+         "Öffne diesen Link auf dem iPhone, iPad oder Mac, auf dem du ihn angefordert hast, und wähle in Kiji ein neues Passwort.", "Vielleicht wurde er schon verwendet. Öffne Kiji und fordere auf dem Anmeldebildschirm einen neuen Link an."],
     it: ["Il tuo indirizzo email è confermato", "Fatto. Kiji si apre su questo dispositivo; altrimenti apri Kiji e accedi con la tua email e la tua password.", "Apri Kiji",
          "Questo link è scaduto", "Potrebbe essere già stato usato. Apri Kiji e accedi. Se il tuo indirizzo non è ancora confermato, registrati di nuovo per ricevere un nuovo link.",
-         "Bacheche, pensieri e giornate, in un posto tranquillo.", "Apri Kiji sul tuo iPhone, iPad o Mac e accedi con la tua email e la tua password."],
+         "Bacheche, pensieri e giornate, in un posto tranquillo.", "Apri Kiji sul tuo iPhone, iPad o Mac e accedi con la tua email e la tua password.",
+         "Scegli una nuova password", "Kiji si apre su questo dispositivo per farti scegliere una nuova password. Altrimenti apri questo link sull’iPhone, iPad o Mac da cui l’hai richiesto.",
+         "Apri questo link sull’iPhone, iPad o Mac da cui l’hai richiesto e scegli una nuova password in Kiji.", "Potrebbe essere già stato usato. Apri Kiji e richiedi un nuovo link dalla schermata di accesso."],
     "pt-BR": ["Seu e-mail foi confirmado", "Tudo pronto. O Kiji abre neste aparelho; se não abrir, abra o Kiji e entre com seu e-mail e sua senha.", "Abrir o Kiji",
          "Este link expirou", "Talvez ele já tenha sido usado. Abra o Kiji e entre. Se seu endereço ainda não foi confirmado, cadastre-se de novo para receber um novo link.",
-         "Quadros, ideias e dias, num lugar tranquilo.", "Abra o Kiji no seu iPhone, iPad ou Mac e entre com seu e-mail e sua senha."],
+         "Quadros, ideias e dias, num lugar tranquilo.", "Abra o Kiji no seu iPhone, iPad ou Mac e entre com seu e-mail e sua senha.",
+         "Escolha uma nova senha", "O Kiji abre neste aparelho para você escolher uma nova senha. Se não abrir, abra este link no iPhone, iPad ou Mac em que você o pediu.",
+         "Abra este link no iPhone, iPad ou Mac em que você o pediu e escolha uma nova senha no Kiji.", "Talvez ele já tenha sido usado. Abra o Kiji e peça um novo link na tela de entrada."],
     ar: ["تم تأكيد بريدك الإلكتروني", "كل شيء جاهز. سيُفتح Kiji على هذا الجهاز؛ وإن لم يُفتح، فافتح Kiji وسجّل الدخول ببريدك الإلكتروني وكلمة المرور.", "افتح Kiji",
          "انتهت صلاحية هذا الرابط", "ربما استُخدم من قبل. افتح Kiji وسجّل الدخول. وإن لم يتم تأكيد عنوانك بعد، فأنشئ حسابك من جديد لتصلك رسالة برابط جديد.",
-         "لوحاتك وأفكارك وأيامك، في مكانٍ هادئ.", "افتح Kiji على جهاز iPhone أو iPad أو Mac وسجّل الدخول ببريدك الإلكتروني وكلمة المرور."],
+         "لوحاتك وأفكارك وأيامك، في مكانٍ هادئ.", "افتح Kiji على جهاز iPhone أو iPad أو Mac وسجّل الدخول ببريدك الإلكتروني وكلمة المرور.",
+         "اختر كلمة مرور جديدة", "سيُفتح Kiji على هذا الجهاز لتختار كلمة مرور جديدة. وإن لم يُفتح، فافتح هذا الرابط على جهاز iPhone أو iPad أو Mac الذي طلبته منه.",
+         "افتح هذا الرابط على جهاز iPhone أو iPad أو Mac الذي طلبته منه، ثم اختر كلمة مرور جديدة في Kiji.", "ربما استُخدم من قبل. افتح Kiji واطلب رابطًا جديدًا من شاشة تسجيل الدخول."],
     "zh-Hans": ["你的电子邮件地址已确认", "一切就绪。Kiji 将在此设备上打开；如果没有打开，请打开 Kiji，用你的电子邮件和密码登录。", "打开 Kiji",
          "此链接已失效", "它可能已被使用过。请打开 Kiji 并登录。如果你的地址尚未确认，请重新注册以获取新链接。",
-         "看板、想法与日子，都在一个安静的地方。", "请在你的 iPhone、iPad 或 Mac 上打开 Kiji，用你的电子邮件和密码登录。"],
+         "看板、想法与日子，都在一个安静的地方。", "请在你的 iPhone、iPad 或 Mac 上打开 Kiji，用你的电子邮件和密码登录。",
+         "设置新密码", "Kiji 将在此设备上打开，供你设置新密码。如果没有打开，请在你申请此链接的 iPhone、iPad 或 Mac 上打开它。",
+         "请在你申请此链接的 iPhone、iPad 或 Mac 上打开它，然后在 Kiji 中设置新密码。", "它可能已被使用过。请打开 Kiji，在登录界面重新获取链接。"],
     ja: ["メールアドレスを確認しました", "準備ができました。この端末で Kiji が開きます。開かない場合は、Kiji を開いてメールアドレスとパスワードでサインインしてください。", "Kiji を開く",
          "このリンクは期限切れです", "すでに使用された可能性があります。Kiji を開いてサインインしてください。アドレスがまだ確認されていない場合は、もう一度登録して新しいリンクを受け取ってください。",
-         "ボードも、考えも、日々も、ひとつの静かな場所に。", "iPhone、iPad、Mac で Kiji を開き、メールアドレスとパスワードでサインインしてください。"],
+         "ボードも、考えも、日々も、ひとつの静かな場所に。", "iPhone、iPad、Mac で Kiji を開き、メールアドレスとパスワードでサインインしてください。",
+         "新しいパスワードを設定してください", "この端末で Kiji が開き、新しいパスワードを設定できます。開かない場合は、このリンクをリクエストした iPhone、iPad、Mac で開いてください。",
+         "このリンクをリクエストした iPhone、iPad、Mac で開き、Kiji で新しいパスワードを設定してください。", "すでに使用された可能性があります。Kiji を開き、サインイン画面から新しいリンクをリクエストしてください。"],
     ko: ["이메일 주소가 확인되었습니다", "준비가 끝났습니다. 이 기기에서 Kiji가 열립니다. 열리지 않으면 Kiji를 열고 이메일과 비밀번호로 로그인하세요.", "Kiji 열기",
          "이 링크는 만료되었습니다", "이미 사용된 링크일 수 있습니다. Kiji를 열고 로그인하세요. 주소가 아직 확인되지 않았다면 다시 가입해 새 링크를 받으세요.",
-         "보드와 생각과 하루를, 조용한 한곳에.", "iPhone, iPad 또는 Mac에서 Kiji를 열고 이메일과 비밀번호로 로그인하세요."]
+         "보드와 생각과 하루를, 조용한 한곳에.", "iPhone, iPad 또는 Mac에서 Kiji를 열고 이메일과 비밀번호로 로그인하세요.",
+         "새 비밀번호를 설정하세요", "이 기기에서 Kiji가 열리면 새 비밀번호를 설정할 수 있습니다. 열리지 않으면 링크를 요청한 iPhone, iPad 또는 Mac에서 이 링크를 여세요.",
+         "링크를 요청한 iPhone, iPad 또는 Mac에서 이 링크를 열고 Kiji에서 새 비밀번호를 설정하세요.", "이미 사용된 링크일 수 있습니다. Kiji를 열고 로그인 화면에서 새 링크를 요청하세요."]
   };
   function pick() {
     var asked = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "en"]);
@@ -97,11 +119,15 @@
   var hash = location.hash || "";
   var params = new URLSearchParams(query.replace(/^\?/, "") + "&" + hash.replace(/^#/, ""));
   var failed = params.has("error") || params.has("error_code");
+  // "Forgot password?": the app marks the link it asks for (PasswordRecovery.landing), and the server keeps
+  // the mark beside the code. It is no address being confirmed, and its way back when it fails is a new link.
+  var recovery = params.get("type") === "recovery";
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-  document.getElementById("title").textContent = failed ? w[3] : w[0];
+  document.getElementById("title").textContent = failed ? w[3] : (recovery ? w[7] : w[0]);
   var apple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
-  document.getElementById("body").textContent = failed ? w[4] : (apple ? w[1] : w[6]);
+  document.getElementById("body").textContent = failed ? (recovery ? w[10] : w[4])
+    : recovery ? (apple ? w[8] : w[9]) : (apple ? w[1] : w[6]);
   document.getElementById("tag").textContent = w[5];
   var open = document.getElementById("open");
   open.textContent = w[2];
